@@ -1,0 +1,23 @@
+{
+  "availability_buffer_in_days": 2,
+  "daily_schedule_windows": [
+    {
+      "day_name": "Monday",
+      "schedule_windows": [
+        {
+          "start_time": "08:00",
+          "end_time": "17:00"
+        }
+      ]
+    },
+    {
+      "day_name": "Tuesday",
+      "schedule_windows": [
+        {
+          "start_time": "08:00",
+          "end_time": "17:00"
+        }
+      ]
+    }
+  ]
+}

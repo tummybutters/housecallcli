@@ -1,0 +1,11 @@
+{
+  "job_input_materials": [
+    {
+      "name": "Copper Pipe",
+      "description": "3/4 inch copper pipe",
+      "part_number": "CP-075",
+      "unit_cost": 1800,
+      "quantity": 2.5
+    }
+  ]
+}

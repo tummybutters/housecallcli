@@ -1,0 +1,34 @@
+{
+  "description": "Updated maintenance visit copy",
+  "image": null,
+  "bookable_as": "estimates",
+  "fields_attributes": [
+    {
+      "id": "pbpff_d458bfa14c0543cf9d4dd4b549a58a9e",
+      "name": "Unit count",
+      "kind": "quantity_select",
+      "price": 10900,
+      "order_index": 0,
+      "duration_in_minutes": 90,
+      "options_attributes": [
+        {
+          "name": "1 unit",
+          "price": 500,
+          "duration_in_minutes": 0,
+          "_destroy": false
+        }
+      ],
+      "service_area_fields_attributes": [
+        {
+          "service_zone_id": "2a742be3-6451-4dc4-bcf1-f8c5a6956009",
+          "price": 11900,
+          "service_area_field_options_attributes": [
+            {
+              "price": 500
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "line_items": [
+    {
+      "name": "Labor",
+      "description": "Two-hour service visit",
+      "unit_price": 19900,
+      "unit_cost": 9000,
+      "quantity": 1,
+      "kind": "labor",
+      "taxable": true
+    },
+    {
+      "name": "Filter",
+      "description": "Standard replacement filter",
+      "unit_price": 3900,
+      "unit_cost": 1200,
+      "quantity": 1,
+      "kind": "materials",
+      "taxable": true
+    }
+  ],
+  "append_line_items": true
+}

@@ -1,0 +1,6 @@
+{
+  "start_time": "2026-04-16T15:00:00Z",
+  "end_time": "2026-04-16T17:00:00Z",
+  "arrival_window_minutes": 60,
+  "dispatched_employees_ids": ["emp_1", "emp_2"]
+}

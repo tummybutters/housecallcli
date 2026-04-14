@@ -1,0 +1,13 @@
+{
+  "line_items": [
+    {
+      "name": "Updated Labor",
+      "description": "Revised labor amount",
+      "unit_price": 21900,
+      "unit_cost": 11000,
+      "quantity": 1,
+      "kind": "labor",
+      "taxable": true
+    }
+  ]
+}

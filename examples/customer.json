@@ -1,0 +1,10 @@
+{
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "email": "jane@example.com",
+  "mobile_number": "+15555550123",
+  "notifications_enabled": true,
+  "tags": ["vip", "maintenance"],
+  "lead_source": "website",
+  "notes": "Prefers morning appointments."
+}

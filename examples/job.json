@@ -1,0 +1,27 @@
+{
+  "customer_id": "cus_123",
+  "address_id": "addr_456",
+  "schedule": {
+    "scheduled_start": "2026-04-15T13:00:00Z",
+    "scheduled_end": "2026-04-15T15:00:00Z",
+    "arrival_window": 60,
+    "anytime": false
+  },
+  "assigned_employee_ids": ["emp_1"],
+  "line_items": [
+    {
+      "name": "Service Call",
+      "description": "Diagnostic and tune-up",
+      "unit_price": 14900,
+      "quantity": 1,
+      "unit_cost": 6500
+    }
+  ],
+  "tags": ["maintenance", "priority"],
+  "lead_source": "returning customer",
+  "notes": "Call 30 minutes before arrival.",
+  "job_fields": {
+    "job_type_id": "job_type_123",
+    "business_unit_id": "business_unit_456"
+  }
+}

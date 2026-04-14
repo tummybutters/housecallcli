@@ -1,0 +1,52 @@
+{
+  "name": "Seasonal Tune-Up",
+  "description": "Online-bookable maintenance visit with add-on ranges.",
+  "automatically_add_to_new_job": true,
+  "taxable": true,
+  "olb_enabled": true,
+  "duration_in_minutes": 90,
+  "dynamic_duration_enabled": false,
+  "bookable_as": "jobs",
+  "question_1": "System age",
+  "question_2": "Access notes",
+  "service_area_pricing_enabled": true,
+  "default_service_zone_id": "2a742be3-6451-4dc4-bcf1-f8c5a6956009",
+  "assigned": {
+    "pros": [
+      {
+        "uuid": "pro_b9d8d7384b894851b03c1df9a748f653",
+        "full_name": "Jordan Lee"
+      }
+    ],
+    "tags": ["maintenance", "priority"]
+  },
+  "fields_attributes": [
+    {
+      "name": "Unit count",
+      "kind": "quantity_select",
+      "price": 9900,
+      "order_index": 0,
+      "duration_in_minutes": 90,
+      "options_attributes": [
+        {
+          "name": "1 unit",
+          "price": 0,
+          "lower_bound": 1,
+          "upper_bound": 1,
+          "duration_in_minutes": 0
+        }
+      ],
+      "service_area_fields_attributes": [
+        {
+          "service_zone_id": "2a742be3-6451-4dc4-bcf1-f8c5a6956009",
+          "price": 10900,
+          "service_area_field_options_attributes": [
+            {
+              "price": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

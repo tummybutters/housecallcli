@@ -1,0 +1,34 @@
+{
+  "customer_id": "cus_123",
+  "address_id": "addr_456",
+  "assigned_employee_ids": ["emp_1"],
+  "lead_source": "phone",
+  "message": "Estimate for seasonal maintenance",
+  "note": "Customer requested premium option comparison.",
+  "options": [
+    {
+      "name": "Standard Service",
+      "tags": ["standard"],
+      "line_items": [
+        {
+          "name": "Labor",
+          "description": "Seasonal maintenance visit",
+          "unit_price": 18900,
+          "quantity": 1,
+          "unit_cost": 9500
+        }
+      ]
+    }
+  ],
+  "tax": {
+    "taxable": true,
+    "tax_rate": 0.0825,
+    "tax_name": "Sales Tax"
+  },
+  "schedule": {
+    "start_time": "2026-04-15T09:00:00Z",
+    "end_time": "2026-04-15T10:00:00Z",
+    "arrival_window_in_minutes": 30,
+    "notify_customer": true
+  }
+}

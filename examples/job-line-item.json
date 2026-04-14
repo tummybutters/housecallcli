@@ -1,0 +1,9 @@
+{
+  "name": "Capacitor Replacement",
+  "description": "Replacement part and installation",
+  "unit_price": 22900,
+  "unit_cost": 9500,
+  "quantity": 1,
+  "kind": "materials",
+  "taxable": true
+}

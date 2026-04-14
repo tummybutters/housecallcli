@@ -1,0 +1,38 @@
+{
+  "customer": {
+    "first_name": "Jordan",
+    "last_name": "Lee",
+    "email": "jordan@example.com",
+    "notifications_enabled": true,
+    "mobile_number": "+15555550124",
+    "company": "Lee Properties",
+    "lead_source": "Website Form",
+    "notes": "Interested in preventative maintenance.",
+    "tags": ["new", "residential"],
+    "addresses": [
+      {
+        "city": "Los Angeles",
+        "state": "CA",
+        "street": "456 Oak Ave",
+        "street_line_2": "Unit 4",
+        "zip": "90002"
+      }
+    ]
+  },
+  "assigned_employee_id": "emp_1",
+  "lead_source": "Website Form",
+  "line_items": [
+    {
+      "description": "Initial diagnostic",
+      "kind": "labor",
+      "name": "Diagnostic Visit",
+      "quantity": 1,
+      "unit_cost": 4500,
+      "unit_price": 9900
+    }
+  ],
+  "note": "Booked from landing page campaign.",
+  "tags": ["priority"],
+  "tax_name": "Sales Tax",
+  "tax_rate": 8
+}
