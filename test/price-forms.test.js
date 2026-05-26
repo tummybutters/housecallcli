@@ -2,9 +2,23 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  buildPriceFormsListQuery,
   buildPriceFormCreateBody,
   buildPriceFormUpdateBody,
 } from "../src/commands/price-forms.js";
+
+test("buildPriceFormsListQuery normalizes pagination", () => {
+  assert.deepEqual(
+    buildPriceFormsListQuery({
+      page: "2",
+      page_size: "100",
+    }),
+    {
+      page: 2,
+      page_size: 100,
+    },
+  );
+});
 
 test("buildPriceFormCreateBody parses nested json flags", async () => {
   const body = await buildPriceFormCreateBody({

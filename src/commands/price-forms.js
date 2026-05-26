@@ -28,6 +28,7 @@ export async function runPriceFormsCommand(args) {
       const payload = await client.request({
         method: "GET",
         path: PRICE_FORMS_PATH,
+        query: buildPriceFormsListQuery(args.flags),
       });
       printJson(payload);
       return;
@@ -97,6 +98,13 @@ export async function buildPriceFormUpdateBody(flags) {
   }
 
   return body;
+}
+
+export function buildPriceFormsListQuery(flags) {
+  return pickDefined({
+    page: toNumber(flags.page),
+    page_size: toNumber(flags.page_size),
+  });
 }
 
 async function buildPriceFormBody(flags) {
