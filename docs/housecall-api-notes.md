@@ -203,6 +203,18 @@ For shared object shapes, enums, and conditional schema rules, see `docs/houseca
 ### Estimate option approvals
 
 - Approval and decline endpoints operate on `option_ids[]`, not estimate IDs.
+- Live probe on 2026-04-15 in the BFTP account:
+  - created disposable estimate `csr_21847f9f871345d9885775e9dd6a02f1`
+  - approved option `est_b92a0e9a66b34cd5ab968a712d925a3a`
+  - response returned `status = "pro approved"` and `copied_on_approval_to_job_id = null`
+  - polling `/jobs?customer_id=...` for 20 seconds detected no new job
+- Practical implication:
+  - API estimate approval should not currently be treated as "job created"
+  - agents must verify job creation after approval and then explicitly create or escalate when no job appears
+- Separate fallback probe on 2026-04-15:
+  - explicit `POST /jobs` for the same customer/address succeeded
+  - returned job `job_e44ceb0e42944ac9943731f4598c1bfe`
+  - `original_estimate_id` was `null`, so the manual fallback job was not linked back to the estimate
 
 ### Jobs list
 

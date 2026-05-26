@@ -1,9 +1,11 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { setTimeout as sleep } from "node:timers/promises";
 
 import { loadResolvedConfig } from "../core/config.js";
 import { HousecallClient } from "../core/client.js";
 import { printJson } from "../core/output.js";
+import { buildJobsListQuery } from "./jobs.js";
 import {
   loadJsonInput,
   loadOptionalJsonValue,
@@ -162,6 +164,25 @@ async function runEstimateOptionsCommand(client, rest, flags) {
         method: "POST",
         path: `/estimates/options/${action}`,
         body,
+      });
+      printJson(payload);
+      return;
+    }
+
+    case "approve-and-check-job": {
+      const estimateId = nestedRest[0];
+
+      if (!estimateId) {
+        throw new Error(
+          "Usage: housecall estimates options approve-and-check-job <estimate_id> --option-ids opt_1,opt_2 [--max-wait-ms 30000] [--poll-interval-ms 3000]",
+        );
+      }
+
+      const body = await buildOptionIdsPayload(flags);
+      const payload = await approveEstimateOptionsAndCheckJob(client, {
+        estimateId,
+        optionIds: body.option_ids,
+        ...buildApproveAndCheckJobOptions(flags),
       });
       printJson(payload);
       return;
@@ -431,6 +452,176 @@ export async function buildOptionIdsPayload(flags) {
   return body;
 }
 
+export function buildApproveAndCheckJobOptions(flags) {
+  return {
+    maxWaitMs: normalizeNonNegativeNumber(flags.max_wait_ms, 30000),
+    pollIntervalMs: normalizeNonNegativeNumber(flags.poll_interval_ms, 3000),
+    pageSize: normalizePositiveNumber(flags.page_size, 100),
+    workStatus: csvOrUndefined(flags.work_status),
+    expand: csvOrUndefined(flags.expand),
+  };
+}
+
+export async function approveEstimateOptionsAndCheckJob(
+  client,
+  {
+    estimateId,
+    optionIds,
+    maxWaitMs = 30000,
+    pollIntervalMs = 3000,
+    pageSize = 100,
+    workStatus,
+    expand,
+    sleepImpl = sleep,
+  },
+) {
+  const estimate = await client.request({
+    method: "GET",
+    path: `/estimates/${estimateId}`,
+  });
+
+  const customerId = extractEstimateCustomerId(estimate);
+  const beforeJobs = customerId
+    ? await listAllCustomerJobs(client, customerId, {
+        pageSize,
+        workStatus,
+        expand,
+      })
+    : [];
+
+  const approval = await client.request({
+    method: "POST",
+    path: "/estimates/options/approve",
+    body: {
+      option_ids: optionIds,
+    },
+  });
+
+  if (!customerId) {
+    return {
+      estimate: summarizeEstimateForJobCheck(estimate),
+      approval,
+      job_check: {
+        status: "unverifiable",
+        reason: "estimate payload did not include a customer id",
+        before_job_count: 0,
+        after_job_count: 0,
+        new_job_count: 0,
+        new_jobs: [],
+        poll_attempts: 0,
+        max_poll_attempts: 0,
+        poll_interval_ms: pollIntervalMs,
+        max_wait_ms: maxWaitMs,
+      },
+    };
+  }
+
+  const maxPollAttempts = calculateMaxPollAttempts(maxWaitMs, pollIntervalMs);
+  let latestJobs = beforeJobs;
+  let newJobs = [];
+
+  for (let attempt = 1; attempt <= maxPollAttempts; attempt += 1) {
+    latestJobs = await listAllCustomerJobs(client, customerId, {
+      pageSize,
+      workStatus,
+      expand,
+    });
+    newJobs = detectNewJobs(beforeJobs, latestJobs);
+
+    if (newJobs.length > 0) {
+      return {
+        estimate: summarizeEstimateForJobCheck(estimate),
+        approval,
+        job_check: {
+          status: "job_detected",
+          customer_id: customerId,
+          before_job_count: beforeJobs.length,
+          after_job_count: latestJobs.length,
+          new_job_count: newJobs.length,
+          new_jobs: newJobs,
+          poll_attempts: attempt,
+          max_poll_attempts: maxPollAttempts,
+          poll_interval_ms: pollIntervalMs,
+          max_wait_ms: maxWaitMs,
+        },
+      };
+    }
+
+    if (attempt < maxPollAttempts && pollIntervalMs > 0) {
+      await sleepImpl(pollIntervalMs);
+    }
+  }
+
+  return {
+    estimate: summarizeEstimateForJobCheck(estimate),
+    approval,
+    job_check: {
+      status: "no_new_job_detected",
+      customer_id: customerId,
+      before_job_count: beforeJobs.length,
+      after_job_count: latestJobs.length,
+      new_job_count: 0,
+      new_jobs: [],
+      poll_attempts: maxPollAttempts,
+      max_poll_attempts: maxPollAttempts,
+      poll_interval_ms: pollIntervalMs,
+      max_wait_ms: maxWaitMs,
+    },
+  };
+}
+
+export function extractEstimateCustomerId(estimate) {
+  return estimate?.customer?.id ?? estimate?.customer_id ?? null;
+}
+
+export function detectNewJobs(beforeJobs, afterJobs) {
+  const beforeIds = new Set((beforeJobs ?? []).map((job) => job?.id).filter(Boolean));
+  return (afterJobs ?? []).filter((job) => job?.id && !beforeIds.has(job.id));
+}
+
+function summarizeEstimateForJobCheck(estimate) {
+  return {
+    id: estimate?.id ?? null,
+    customer_id: extractEstimateCustomerId(estimate),
+    address_id: estimate?.address?.id ?? estimate?.address_id ?? null,
+    option_ids: (estimate?.options ?? []).map((option) => option?.id).filter(Boolean),
+  };
+}
+
+async function listAllCustomerJobs(client, customerId, { pageSize, workStatus, expand }) {
+  const jobs = [];
+  let page = 1;
+  let totalPages = 1;
+
+  while (page <= totalPages) {
+    const payload = await client.request({
+      method: "GET",
+      path: "/jobs",
+      query: buildJobsListQuery({
+        customer_id: customerId,
+        page,
+        page_size: pageSize,
+        work_status: workStatus,
+        expand,
+      }),
+    });
+
+    jobs.push(...(payload?.jobs ?? []));
+    totalPages = normalizePositiveNumber(payload?.total_pages, 1);
+    page += 1;
+  }
+
+  return jobs;
+}
+
+function calculateMaxPollAttempts(maxWaitMs, pollIntervalMs) {
+  if (maxWaitMs <= 0) {
+    return 1;
+  }
+
+  return Math.max(1, Math.floor(maxWaitMs / Math.max(pollIntervalMs, 1)) + 1);
+}
+
 function buildDispatchedEmployees(value) {
   const employeeIds = csvOrUndefined(value) ?? [];
 
@@ -444,6 +635,24 @@ function buildDispatchedEmployees(value) {
 function csvOrUndefined(value) {
   const items = splitCsv(value);
   return items.length > 0 ? items : undefined;
+}
+
+function normalizeNonNegativeNumber(value, fallback) {
+  const numericValue = toNumber(value);
+  if (numericValue === undefined || numericValue < 0) {
+    return fallback;
+  }
+
+  return numericValue;
+}
+
+function normalizePositiveNumber(value, fallback) {
+  const numericValue = toNumber(value);
+  if (numericValue === undefined || numericValue < 1) {
+    return fallback;
+  }
+
+  return numericValue;
 }
 
 function validateRequiredFields(body, fields, label) {

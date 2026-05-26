@@ -33,6 +33,7 @@ Core commands:
   housecall estimates options notes create <estimate_id> <option_id> --content "Internal note"
   housecall estimates options notes delete <estimate_id> <option_id> <note_id>
   housecall estimates options approve --option-ids opt_1,opt_2
+  housecall estimates options approve-and-check-job <estimate_id> --option-ids opt_1,opt_2 [--max-wait-ms 30000] [--poll-interval-ms 3000]
   housecall estimates options decline --option-ids opt_1,opt_2
   housecall jobs list [--customer-id cus_123] [--work-status scheduled,in_progress]
   housecall jobs get <job_id> [--expand attachments,appointments]
@@ -73,7 +74,7 @@ Core commands:
   housecall leads line-items list <lead_id>
   housecall pipeline-statuses list --resource-type lead|job|estimate
   housecall pipeline-statuses update --resource-type lead --resource-id lead_123 --status-id kcs_456
-  housecall price-forms list
+  housecall price-forms list [--page 1] [--page-size 100]
   housecall price-forms get <price_form_id>
   housecall price-forms create --data @price-form.json
   housecall price-forms update <price_form_id> --data @price-form-update.json

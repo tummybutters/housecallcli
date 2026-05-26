@@ -20,7 +20,7 @@ The goal is to make Housecall usable from Codex, Claude, and lightweight operato
 | `customers` | list, get, create, update |
 | `customers addresses` | list, get, create |
 | `estimates` | list, get, create |
-| `estimates options` | create, attachments, line-items, links, schedule, notes, approve, decline |
+| `estimates options` | create, attachments, line-items, links, schedule, notes, approve, approve-and-check-job, decline |
 | `jobs` | list, get, create + 20 subcommands (see below) |
 | `job-types` | list, create, update |
 | `lead-sources` | list, create, update |
@@ -167,6 +167,7 @@ housecall estimates options schedule update est_123 opt_456 --data @./examples/e
 housecall estimates options notes create est_123 opt_456 --content "Waiting on customer approval"
 housecall estimates options notes delete est_123 opt_456 note_789
 housecall estimates options approve --option-ids opt_456,opt_457
+housecall estimates options approve-and-check-job est_123 --option-ids opt_456,opt_457 --max-wait-ms 30000 --poll-interval-ms 3000
 housecall estimates options decline --option-ids opt_456,opt_457
 ```
 
@@ -227,7 +228,7 @@ housecall invoices preview inv_123
 ### Price forms
 
 ```bash
-housecall price-forms list
+housecall price-forms list --page 1 --page-size 100
 housecall price-forms get pbpf_abc123
 housecall price-forms create --data @./examples/price-form.json
 housecall price-forms update pbpf_abc123 --data @./examples/price-form-update.json
